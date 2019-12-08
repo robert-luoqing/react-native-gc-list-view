@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B3E7B58A1CC2AC0600A0062D /* GcListView.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* GcListView.m */; };
+		8D9354DB239CDF3100377BAA /* GCScrollItemManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354CC239CDF3000377BAA /* GCScrollItemManager.m */; };
+		8D9354DC239CDF3100377BAA /* GCCoordinatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354CE239CDF3000377BAA /* GCCoordinatorView.m */; };
+		8D9354DD239CDF3100377BAA /* GCScrollItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354CF239CDF3000377BAA /* GCScrollItemView.m */; };
+		8D9354DE239CDF3100377BAA /* GCNotifyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354D0239CDF3000377BAA /* GCNotifyView.m */; };
+		8D9354DF239CDF3100377BAA /* GCViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354D1239CDF3000377BAA /* GCViewManager.m */; };
+		8D9354E0239CDF3100377BAA /* GCNotifyVisiableModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354D4239CDF3000377BAA /* GCNotifyVisiableModel.m */; };
+		8D9354E1239CDF3100377BAA /* GCCoordinatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D9354D6239CDF3100377BAA /* GCCoordinatorManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,8 +30,20 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libGcListView.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libGcListView.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3E7B5881CC2AC0600A0062D /* GcListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GcListView.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* GcListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GcListView.m; sourceTree = "<group>"; };
+		8D9354CC239CDF3000377BAA /* GCScrollItemManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCScrollItemManager.m; sourceTree = "<group>"; };
+		8D9354CD239CDF3000377BAA /* GCScrollItemManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCScrollItemManager.h; sourceTree = "<group>"; };
+		8D9354CE239CDF3000377BAA /* GCCoordinatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCCoordinatorView.m; sourceTree = "<group>"; };
+		8D9354CF239CDF3000377BAA /* GCScrollItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCScrollItemView.m; sourceTree = "<group>"; };
+		8D9354D0239CDF3000377BAA /* GCNotifyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCNotifyView.m; sourceTree = "<group>"; };
+		8D9354D1239CDF3000377BAA /* GCViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCViewManager.m; sourceTree = "<group>"; };
+		8D9354D2239CDF3000377BAA /* GCCoordinatorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCCoordinatorManager.h; sourceTree = "<group>"; };
+		8D9354D4239CDF3000377BAA /* GCNotifyVisiableModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCNotifyVisiableModel.m; sourceTree = "<group>"; };
+		8D9354D5239CDF3000377BAA /* GCNotifyVisiableModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCNotifyVisiableModel.h; sourceTree = "<group>"; };
+		8D9354D6239CDF3100377BAA /* GCCoordinatorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCCoordinatorManager.m; sourceTree = "<group>"; };
+		8D9354D7239CDF3100377BAA /* GCViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCViewManager.h; sourceTree = "<group>"; };
+		8D9354D8239CDF3100377BAA /* GCScrollItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCScrollItemView.h; sourceTree = "<group>"; };
+		8D9354D9239CDF3100377BAA /* GCCoordinatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCCoordinatorView.h; sourceTree = "<group>"; };
+		8D9354DA239CDF3100377BAA /* GCNotifyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCNotifyView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,10 +68,30 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				B3E7B5881CC2AC0600A0062D /* GcListView.h */,
-				B3E7B5891CC2AC0600A0062D /* GcListView.m */,
+				8D9354D2239CDF3000377BAA /* GCCoordinatorManager.h */,
+				8D9354D6239CDF3100377BAA /* GCCoordinatorManager.m */,
+				8D9354D9239CDF3100377BAA /* GCCoordinatorView.h */,
+				8D9354CE239CDF3000377BAA /* GCCoordinatorView.m */,
+				8D9354DA239CDF3100377BAA /* GCNotifyView.h */,
+				8D9354D0239CDF3000377BAA /* GCNotifyView.m */,
+				8D9354CD239CDF3000377BAA /* GCScrollItemManager.h */,
+				8D9354CC239CDF3000377BAA /* GCScrollItemManager.m */,
+				8D9354D8239CDF3100377BAA /* GCScrollItemView.h */,
+				8D9354CF239CDF3000377BAA /* GCScrollItemView.m */,
+				8D9354D7239CDF3100377BAA /* GCViewManager.h */,
+				8D9354D1239CDF3000377BAA /* GCViewManager.m */,
+				8D9354D3239CDF3000377BAA /* Models */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		8D9354D3239CDF3000377BAA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8D9354D4239CDF3000377BAA /* GCNotifyVisiableModel.m */,
+				8D9354D5239CDF3000377BAA /* GCNotifyVisiableModel.h */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -95,6 +133,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -112,7 +151,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E7B58A1CC2AC0600A0062D /* GcListView.m in Sources */,
+				8D9354DF239CDF3100377BAA /* GCViewManager.m in Sources */,
+				8D9354DB239CDF3100377BAA /* GCScrollItemManager.m in Sources */,
+				8D9354DC239CDF3100377BAA /* GCCoordinatorView.m in Sources */,
+				8D9354E0239CDF3100377BAA /* GCNotifyVisiableModel.m in Sources */,
+				8D9354E1239CDF3100377BAA /* GCCoordinatorManager.m in Sources */,
+				8D9354DD239CDF3100377BAA /* GCScrollItemView.m in Sources */,
+				8D9354DE239CDF3100377BAA /* GCNotifyView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,7 +261,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-				"$(inherited)",
+					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",
