@@ -1,9 +1,3 @@
-/**
- * @format
- */
+export { GCListView } from './build/gcListView';
+export default GCListView;
 
-import {AppRegistry} from 'react-native';
-import App from './App';
-import {name as appName} from './app.json';
-
-AppRegistry.registerComponent(appName, () => App);

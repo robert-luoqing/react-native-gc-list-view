@@ -1,9 +1,6 @@
 import React from 'react';
 import {
-    StyleSheet,
-    View,
-    Text,
-    Image,
+    View
 } from 'react-native';
 import GCNotifyView from './gcNotifyView';
 import _ from 'lodash';

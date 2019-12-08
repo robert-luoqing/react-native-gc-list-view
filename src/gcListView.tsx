@@ -1,8 +1,7 @@
 import React from 'react';
 import {
     StyleSheet,
-    ScrollView,
-    View,
+    ScrollView
 } from 'react-native';
 import GCCoordinatorView from './gcCoordinatorView';
 import { GCSingleBindView } from './gcSingleBindView';
@@ -81,7 +80,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
                     height: this.scrollContentHeight,
                 }}>
                 {
-                    this.state.bindList.map((item: any, index: any) => {
+                    this.state.bindList.map((_: any, index: any) => {
                         return (
                             <GCScrollItemView
                                 key={index}
