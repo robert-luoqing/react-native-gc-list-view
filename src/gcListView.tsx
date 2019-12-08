@@ -1,13 +1,14 @@
 import React from 'react';
 import {
     StyleSheet,
-    ScrollView
+    ScrollView,
+    ScrollViewProps
 } from 'react-native';
 import GCCoordinatorView from './gcCoordinatorView';
 import { GCSingleBindView } from './gcSingleBindView';
 import GCScrollItemView from './gcScrollItemView';
 
-interface GCListViewProp {
+interface GCListViewPropInner {
     data: any[]; 
     /**
      * The control category
@@ -30,6 +31,8 @@ interface GCListViewProp {
      */
     renderItem: (itemData: any, index: number) => JSX.Element;
 }
+
+type GCListViewProp = ScrollViewProps & GCListViewPropInner;
 
 export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex: number; bindList: any[]; }> {
     scrollContentHeight = 0;
@@ -70,6 +73,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
 
     render() {
         return <ScrollView
+            {...this.props}
             contentInsetAdjustmentBehavior="automatic"
         >
             <GCCoordinatorView

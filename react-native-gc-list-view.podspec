@@ -6,9 +6,7 @@ Pod::Spec.new do |s|
   s.name         = "react-native-gc-list-view"
   s.version      = package["version"]
   s.summary      = package["description"]
-  s.description  = <<-DESC
-                  react-native-gc-list-view
-                   DESC
+  s.description  = "GC List View"
   s.homepage     = "https://github.com/github_account/react-native-gc-list-view"
   s.license      = "MIT"
   # s.license    = { :type => "MIT", :file => "FILE_LICENSE" }
