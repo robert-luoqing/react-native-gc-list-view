@@ -1,12 +1,12 @@
 package com.gc.listview;
 
 public class GCNotifyVisiableModel {
-  public int getIndex() {
-    return index;
+  public String getKey() {
+    return key;
   }
 
-  public void setIndex(int index) {
-    this.index = index;
+  public void setKey(String key) {
+    this.key = key;
   }
 
   public int getStartY() {
@@ -33,13 +33,23 @@ public class GCNotifyVisiableModel {
     this.category = category;
   }
 
+  public int getIndex() {
+    return index;
+  }
+
+  public void setIndex(int index) {
+    this.index = index;
+  }
+
   private int index;
+  private String key;
   private int startY;
   private int endY;
   private String category;
 
-  public GCNotifyVisiableModel(int index, int startY, int endY, String category) {
+  public GCNotifyVisiableModel(int index, String key, int startY, int endY, String category) {
     this.index = index;
+    this.key = key;
     this.startY = startY;
     this.endY = endY;
     this.category = category;

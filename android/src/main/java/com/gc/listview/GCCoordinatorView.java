@@ -10,6 +10,7 @@ import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.views.scroll.ReactScrollView;
 import com.facebook.react.views.view.ReactViewGroup;
 
@@ -22,10 +23,14 @@ public class GCCoordinatorView extends ReactViewGroup {
   private ArrayList<GCNotifyView> notifyViews;
 
   private int forceIndex;
-  private ReadableArray itemLayouts;
-  private ReadableArray categories;
+  private ArrayList<GCJSPassModel> decodeData;
 
   private int lastScrollViewY;
+
+  /**
+   * Content height
+   */
+  private int lastContentHeight = 0;
 
   /**
    * invert to show item
@@ -38,12 +43,14 @@ public class GCCoordinatorView extends ReactViewGroup {
 
   public void setInvert(boolean invert) {
     this.invert = invert;
+    this.handleScroll(scrollView, this.lastScrollViewY, true);
   }
 
   /**
    * How much frame will be load
    */
   private int preloadFrame = 1;
+
   public int getPreloadFrame() {
     return preloadFrame;
   }
@@ -67,21 +74,31 @@ public class GCCoordinatorView extends ReactViewGroup {
     this.handleScroll(scrollView, this.lastScrollViewY, true);
   }
 
-  public ReadableArray getItemLayouts() {
-    return itemLayouts;
+  private ReadableArray data;
+
+  public ReadableArray getData() {
+    return data;
   }
 
-  public void setItemLayouts(ReadableArray itemLayouts) {
-    this.itemLayouts = itemLayouts;
-    this.handleScroll(scrollView, this.lastScrollViewY, true);
-  }
+  public void setData(ReadableArray data) {
+    this.data = data;
+    this.decodeData = new ArrayList<>();
+    if (data != null) {
+      for (int i = 0; i < data.size(); i++) {
+        ReadableMap map = this.data.getMap(i);
+        GCJSPassModel model = new GCJSPassModel(
+          map.getInt("offset"),
+          map.getString("key"),
+          map.getString("category"));
+        this.decodeData.add(model);
+      }
+    }
 
-  public ReadableArray getCategories() {
-    return categories;
-  }
+    this.lastContentHeight = 0;
+    if (this.decodeData.size() > 0) {
+      this.lastContentHeight = decodeData.get(decodeData.size() - 1).getOffset();
+    }
 
-  public void setCategories(ReadableArray categories) {
-    this.categories = categories;
     this.handleScroll(scrollView, this.lastScrollViewY, true);
   }
 
@@ -105,14 +122,14 @@ public class GCCoordinatorView extends ReactViewGroup {
             }
           });
         } else {
-           scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-               @Override
-               public void onScrollChanged() {
-                   int scrollY = scrollView.getScrollY(); //for verticalScrollView
-                   GCCoordinatorView.this.handleScroll(scrollView, scrollY, false);
-                 Log.d("DEBUG", "coordinate1: " + String.valueOf(scrollY));
-               }
-           });
+          scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+              int scrollY = scrollView.getScrollY(); //for verticalScrollView
+              GCCoordinatorView.this.handleScroll(scrollView, scrollY, false);
+              Log.d("DEBUG", "coordinate1: " + String.valueOf(scrollY));
+            }
+          });
         }
       }
     }
@@ -144,13 +161,13 @@ public class GCCoordinatorView extends ReactViewGroup {
       ArrayList<GCNotifyView> matchedNotifyViews = new ArrayList<>(this.notifyViews);
       if (showObjs.size() > 0 && matchedNotifyViews.size() > 0) {
         int notifyCount = matchedNotifyViews.size();
-        HashMap<Integer, GCNotifyView> assignedViews = new HashMap<Integer, GCNotifyView>();
+        HashMap<String, GCNotifyView> assignedViews = new HashMap<String, GCNotifyView>();
         HashMap<String, ArrayList<GCNotifyView>> categoryViews = new HashMap<String, ArrayList<GCNotifyView>>();
 
         for (int notifyIndex = 0; notifyIndex < notifyCount; notifyIndex++) {
           GCNotifyView notifyObj = matchedNotifyViews.get(notifyIndex);
-          if (notifyObj.getIndex() >= 0) {
-            assignedViews.put(notifyObj.getIndex(), notifyObj);
+          if (notifyObj.getKey() != null && notifyObj.getKey() != "") {
+            assignedViews.put(notifyObj.getKey(), notifyObj);
           } else {
             // Category the view
             // Category the view
@@ -170,7 +187,8 @@ public class GCCoordinatorView extends ReactViewGroup {
         ArrayList<GCNotifyVisiableModel> unhandledShowObjs = new ArrayList<>();
         for (int showIndex = 0; showIndex < showObjs.size(); showIndex++) {
           GCNotifyVisiableModel showObj = showObjs.get(showIndex);
-          int key = showObj.getIndex();
+          String key = showObj.getKey();
+          if (key == null) key = "";
           GCNotifyView notifyObj = assignedViews.get(key);
           if (notifyObj != null) {
             notifyObj.notifyRebind(showObj, isForce);
@@ -214,8 +232,8 @@ public class GCCoordinatorView extends ReactViewGroup {
               notifyObj.notifyRebind(showObj, isForce);
               matchedNotifyViews.remove(notifyObj);
               ArrayList clist = categoryViews.get(notifyObjCategory);
-              if(clist!=null && clist.contains(notifyObj)) {
-                clist.remove(notifyObj);  
+              if (clist != null && clist.contains(notifyObj)) {
+                clist.remove(notifyObj);
               }
             }
           }
@@ -246,7 +264,7 @@ public class GCCoordinatorView extends ReactViewGroup {
       scrollHeight = convertPixelsToDp(height, this.getContext());
     }
 
-    handleScrollInner(scrollHeight, convertPixelsToDp(this.getHeight(), this.getContext()), convertPixelsToDp(y, this.getContext()), isForce);
+    handleScrollInner(scrollHeight, this.lastContentHeight, convertPixelsToDp(y, this.getContext()), isForce);
   }
 
   /**
@@ -274,15 +292,17 @@ public class GCCoordinatorView extends ReactViewGroup {
     boolean isPassed = false;
     ArrayList<GCNotifyVisiableModel> showObjs = new ArrayList<>();
     int itemCount = 0;
-    if (this.itemLayouts != null) {
-      itemCount = this.itemLayouts.size();
+    if (this.decodeData != null) {
+      itemCount = this.decodeData.size();
     }
 
     for (int i = 0; i < itemCount; i++) {
+      GCJSPassModel model = this.decodeData.get(i);
       int startY = 0;
-      int endY = this.itemLayouts.getInt(i);
+      int endY = model.getOffset();
       if (i != 0) {
-        startY = this.itemLayouts.getInt(i - 1);
+        GCJSPassModel prevModel = this.decodeData.get(i - 1);
+        startY = prevModel.getOffset();
       }
 
       // It mean the element fall in visual area
@@ -290,15 +310,14 @@ public class GCCoordinatorView extends ReactViewGroup {
         || (startY >= minY && endY <= maxY)
         || (startY <= maxY && endY >= maxY)
       ) {
-        String category = "";
-        if (this.categories != null && this.categories.size() >= i + 1) {
-          category = this.categories.getString(i);
-        }
+        String category = model.getCategory();
+        if (category == null) category = "";
+
         GCNotifyVisiableModel notifyVisiableModel = null;
         if (this.invert == true) {
-          notifyVisiableModel = new GCNotifyVisiableModel(i, contentHeight - endY, contentHeight - startY, category);
+          notifyVisiableModel = new GCNotifyVisiableModel(i, model.getKey(), contentHeight - endY, contentHeight - startY, category);
         } else {
-          notifyVisiableModel = new GCNotifyVisiableModel(i, startY, endY, category);
+          notifyVisiableModel = new GCNotifyVisiableModel(i, model.getKey(), startY, endY, category);
         }
 
         // to show the item
@@ -318,6 +337,18 @@ public class GCCoordinatorView extends ReactViewGroup {
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     this.handleScrollOutside();
+    if (this.invert) {
+      if (h != oldh) {
+        int gap = h - (this.lastScrollViewY + this.scrollView.getHeight());
+        if (gap < 50) {
+          if (gap < 0) {
+            this.scrollView.scrollTo(0, 0);
+          } else {
+            this.scrollView.scrollTo(0, h - gap - this.scrollView.getHeight());
+          }
+        }
+      }
+    }
   }
 
   @Override

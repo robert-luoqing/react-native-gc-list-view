@@ -14,7 +14,7 @@ import com.facebook.react.views.scroll.ReactScrollView;
 public class GCNotifyView extends View {
   private ReactScrollView scrollView;
   private GCScrollItemView parentView;
-  private int index = -1;
+  private String key;
   private long lastBind;
   // Priority to use same category element
   private String lastCategory;
@@ -24,12 +24,12 @@ public class GCNotifyView extends View {
    */
   private boolean released = false;
 
-  public int getIndex() {
-    return index;
+  public String getKey() {
+    return key;
   }
 
-  public void setIndex(int index) {
-    this.index = index;
+  public void setKey(String key) {
+    this.key = key;
   }
 
   public String getLastCategory() {
@@ -60,9 +60,10 @@ public class GCNotifyView extends View {
     }
   }
 
-  private void notifyIndexChanged(int index, int startY, int endY) {
+  private void notifyIndexChanged(int index, String key, int startY, int endY) {
     WritableMap event = Arguments.createMap();
     event.putInt("index", index);
+    event.putString("key", key);
     event.putInt("startY", startY);
     event.putInt("endY", endY);
     ReactContext reactContext = (ReactContext) getContext();
@@ -82,9 +83,9 @@ public class GCNotifyView extends View {
   }
 
   public void notifyRebind(GCNotifyVisiableModel model, boolean isForce) {
-    int oldIndex = this.index;
+    String oldKey = this.key;
     long now = System.currentTimeMillis();
-    this.index = model.getIndex();
+    this.key = model.getKey();
     this.lastCategory = model.getCategory();
     this.released = false;
     // The rect's y and height
@@ -104,16 +105,16 @@ public class GCNotifyView extends View {
     }
 
     if (isForce) {
-      this.notifyIndexChanged(model.getIndex(), model.getStartY(), model.getEndY());
+      this.notifyIndexChanged(model.getIndex(), model.getKey(), model.getStartY(), model.getEndY());
     } else {
-      if (oldIndex != this.index
+      if (oldKey != this.key
         || elementY != model.getStartY()
         || elementHeight != (model.getEndY() - model.getStartY())
       ) {
-        this.notifyIndexChanged(model.getIndex(), model.getStartY(), model.getEndY());
+        this.notifyIndexChanged(model.getIndex(), model.getKey(), model.getStartY(), model.getEndY());
       } else {
         if ((now - lastBind) > 200) {
-          this.notifyIndexChanged(model.getIndex(), model.getStartY(), model.getEndY());
+          this.notifyIndexChanged(model.getIndex(), model.getKey(), model.getStartY(), model.getEndY());
         }
       }
     }
@@ -133,7 +134,7 @@ public class GCNotifyView extends View {
       }
     }
 
-    if(this.released == false) {
+    if (this.released == false) {
       this.released = true;
       this.notifyIndexToFree();
     }

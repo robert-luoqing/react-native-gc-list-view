@@ -9,24 +9,24 @@ import GCCoordinatorView from './gcCoordinatorView';
 import { GCSingleBindView } from './gcSingleBindView';
 import GCScrollItemView from './gcScrollItemView';
 
+export interface GCRelevantData {
+    key: string;
+    offset: number;
+    category?: string;
+}
+
 interface GCListViewPropInner {
     data: any[];
+
     /**
-     * The control category
-     * Try to use same category control to avoid recreate element
-     * if the item have difference category
-     * If no category item, then null be set.
-     */
-    categories?: string[];
-    /**
-     * The offset+height will be set
+     * The offset will be set
      * if there are three elements like:
      * element 1: offset: 0, height: 10,
      * element 1: offset: 10, height: 20,
      * element 1: offset: 30, height: 20,
      * The array should be [10,30,50]
      */
-    itemLayouts: number[];
+    relevantData: GCRelevantData[];
     preloadFrame?: number;
     invert?: boolean;
     /**
@@ -57,20 +57,21 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: any) {
-        if (nextProps.itemLayouts !== this.props.itemLayouts) {
-            this.calcItemLayout(nextProps.itemLayouts);
+        if (nextProps.relevantData !== this.props.relevantData) {
+            this.calcItemLayout(nextProps.relevantData);
         }
     }
 
-    calcItemLayout(itemLayouts: any[]) {
+    calcItemLayout(relevantData: GCRelevantData[]) {
         this.scrollContentHeight = 0;
-        if (itemLayouts && itemLayouts.length > 0) {
-            this.scrollContentHeight = itemLayouts[itemLayouts.length - 1];
+        if (relevantData && relevantData.length > 0) {
+            const obj = relevantData[relevantData.length - 1];
+            this.scrollContentHeight = obj.offset;
         }
     }
 
     componentDidMount() {
-        this.calcItemLayout(this.props.itemLayouts);
+        this.calcItemLayout(this.props.relevantData);
         setTimeout(() => {
             this.setState({
                 forceIndex: this.state.forceIndex + 1
@@ -86,13 +87,13 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
             <GCCoordinatorView
                 forceIndex={this.state.forceIndex}
                 pixelRatio={this.ratio}
-                itemLayouts={this.props.itemLayouts || []}
-                categories={this.props.categories || []}
+                data={this.props.relevantData || []}
                 preloadFrame={this.props.preloadFrame || 1}
                 invert={this.props.invert || false}
                 style={{
                     height: this.scrollContentHeight,
-                }}>
+                }}
+            >
                 {
                     this.state.bindList.map((_: any, index: any) => {
                         return (

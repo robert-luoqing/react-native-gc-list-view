@@ -1,7 +1,7 @@
 package com.gc.listview;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 

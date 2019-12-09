@@ -34,16 +34,6 @@ public class GCCoordinatorManager extends ViewGroupManager<GCCoordinatorView> {
     view.setPixelRatio(pixelRatio);
   }
 
-  @ReactProp(name = "itemLayouts")
-  public void setItemLayouts(GCCoordinatorView view, ReadableArray itemLayouts) {
-    view.setItemLayouts(itemLayouts);
-  }
-
-  @ReactProp(name = "categories")
-  public void setCategories(GCCoordinatorView view, ReadableArray categories) {
-    view.setCategories(categories);
-  }
-
   @Override
   public boolean needsCustomLayoutForChildren() {
     return true;
@@ -58,5 +48,10 @@ public class GCCoordinatorManager extends ViewGroupManager<GCCoordinatorView> {
   @ReactProp(name = "invert", defaultBoolean = false)
   public void setInvert(GCCoordinatorView view, boolean invert) {
     view.setInvert(invert);
+  }
+
+  @ReactProp(name = "data")
+  public void setData(GCCoordinatorView view, ReadableArray data) {
+    view.setData(data);
   }
 }
