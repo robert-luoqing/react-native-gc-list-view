@@ -12,229 +12,288 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.views.scroll.ReactScrollView;
 import com.facebook.react.views.view.ReactViewGroup;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GCCoordinatorView extends ReactViewGroup {
-    private ReactScrollView scrollView;
-    private ArrayList<GCNotifyView> notifyViews;
+  private ReactScrollView scrollView;
+  private ArrayList<GCNotifyView> notifyViews;
 
-    private int forceIndex;
-    private ReadableArray itemLayouts;
-    private ReadableArray categories;
+  private int forceIndex;
+  private ReadableArray itemLayouts;
+  private ReadableArray categories;
 
-    private int lastScrollViewY;
+  private int lastScrollViewY;
 
-    public int getForceIndex() {
-        return forceIndex;
-    }
+  public static float pixelRatio;
 
-    public void setForceIndex(int forceIndex) {
-        this.forceIndex = forceIndex;
-        this.handleScroll(scrollView, this.lastScrollViewY, true);
-    }
+  public void setPixelRatio(float ratio) {
+    GCCoordinatorView.pixelRatio = ratio;
+  }
 
-    public ReadableArray getItemLayouts() {
-        return itemLayouts;
-    }
+  public int getForceIndex() {
+    return forceIndex;
+  }
 
-    public void setItemLayouts(ReadableArray itemLayouts) {
-        this.itemLayouts = itemLayouts;
-        this.handleScroll(scrollView, this.lastScrollViewY, true);
-    }
+  public void setForceIndex(int forceIndex) {
+    this.forceIndex = forceIndex;
+    this.handleScroll(scrollView, this.lastScrollViewY, true);
+  }
 
-    public ReadableArray getCategories() {
-        return categories;
-    }
+  public ReadableArray getItemLayouts() {
+    return itemLayouts;
+  }
 
-    public void setCategories(ReadableArray categories) {
-        this.categories = categories;
-        this.handleScroll(scrollView, this.lastScrollViewY, true);
-    }
+  public void setItemLayouts(ReadableArray itemLayouts) {
+    this.itemLayouts = itemLayouts;
+    this.handleScroll(scrollView, this.lastScrollViewY, true);
+  }
 
-    public GCCoordinatorView(Context context) {
-        super(context);
+  public ReadableArray getCategories() {
+    return categories;
+  }
 
-    }
+  public void setCategories(ReadableArray categories) {
+    this.categories = categories;
+    this.handleScroll(scrollView, this.lastScrollViewY, true);
+  }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        if (scrollView == null) {
-            scrollView = GCCoordinatorView.fintSpecifyParent(ReactScrollView.class, this.getParent());
-            if (scrollView != null) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
-                        @Override
-                        public void onScrollChange(View view, int i, int i1, int i2, int i3) {
-                            GCCoordinatorView.this.handleScroll(scrollView, i1, false);
-                            Log.d("DEBUG", "coordinate: " + String.valueOf(i1));
-                        }
-                    });
-                }
+  public GCCoordinatorView(Context context) {
+    super(context);
 
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    if (scrollView == null) {
+      scrollView = GCCoordinatorView.fintSpecifyParent(ReactScrollView.class, this.getParent());
+      if (scrollView != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(View view, int i, int i1, int i2, int i3) {
+              GCCoordinatorView.this.handleScroll(scrollView, i1, false);
+              Log.d("DEBUG", "coordinate: " + String.valueOf(i1));
             }
+          });
         }
+
+      }
     }
+  }
 
 
-    public static <T> T fintSpecifyParent(Class<T> tClass, ViewParent parent) {
-        if (parent == null) {
-            return null;
-        } else {
-            if (tClass.isInstance(parent)) {
-                return (T) parent;
-            } else {
-                return fintSpecifyParent(tClass, parent.getParent());
+  public static <T> T fintSpecifyParent(Class<T> tClass, ViewParent parent) {
+    if (parent == null) {
+      return null;
+    } else {
+      if (tClass.isInstance(parent)) {
+        return (T) parent;
+      } else {
+        return fintSpecifyParent(tClass, parent.getParent());
+      }
+    }
+  }
+
+  public void registerView(GCNotifyView view) {
+    if (notifyViews == null) {
+      notifyViews = new ArrayList<GCNotifyView>();
+    }
+    notifyViews.add(view);
+  }
+
+
+  private void notifyToShowIndex(ArrayList<GCNotifyVisiableModel> showObjs, boolean isForce) {
+    if (this.notifyViews != null) {
+      ArrayList<GCNotifyView> matchedNotifyViews = new ArrayList<>(this.notifyViews);
+      if (showObjs.size() > 0 && matchedNotifyViews.size() > 0) {
+        int notifyCount = matchedNotifyViews.size();
+        HashMap<Integer, GCNotifyView> assignedViews = new HashMap<Integer, GCNotifyView>();
+        HashMap<String, ArrayList<GCNotifyView>> categoryViews = new HashMap<String, ArrayList<GCNotifyView>>();
+
+        for (int notifyIndex = 0; notifyIndex < notifyCount; notifyIndex++) {
+          GCNotifyView notifyObj = matchedNotifyViews.get(notifyIndex);
+          if (notifyObj.getIndex() >= 0) {
+            assignedViews.put(notifyObj.getIndex(), notifyObj);
+          } else {
+            // Category the view
+            // Category the view
+            String category = notifyObj.getLastCategory();
+            if (category == null) {
+              category = "";
             }
-        }
-    }
-
-    public void registerView(GCNotifyView view) {
-        if (notifyViews == null) {
-            notifyViews = new ArrayList<GCNotifyView>();
-        }
-        notifyViews.add(view);
-    }
-
-
-    private void notifyToShowIndex(ArrayList<GCNotifyVisiableModel> showObjs, boolean isForce) {
-        if (this.notifyViews != null) {
-            ArrayList<GCNotifyView> matchedNotifyViews = new ArrayList<>(this.notifyViews);
-            if (showObjs.size() > 0 && matchedNotifyViews.size() > 0) {
-                int notifyCount = matchedNotifyViews.size();
-                HashMap<Integer, GCNotifyView> assignedViews = new HashMap<Integer, GCNotifyView>();
-
-                for (int notifyIndex = 0; notifyIndex < notifyCount; notifyIndex++) {
-                    GCNotifyView notifyObj = matchedNotifyViews.get(notifyIndex);
-                    if (notifyObj.getIndex() >= 0) {
-
-                        assignedViews.put(notifyObj.getIndex(), notifyObj);
-                    }
-                }
-
-
-                ArrayList<GCNotifyVisiableModel> unhandledShowObjs = new ArrayList<>();
-                for (int showIndex = 0; showIndex < showObjs.size(); showIndex++) {
-                    GCNotifyVisiableModel showObj = showObjs.get(showIndex);
-                    int key = showObj.getIndex();
-                    GCNotifyView notifyObj = assignedViews.get(key);
-                    if (notifyObj != null) {
-                        notifyObj.notifyRebind(showObj, isForce);
-                        matchedNotifyViews.remove(notifyObj);
-
-                    } else {
-                        unhandledShowObjs.add(showObj);
-
-                    }
-                }
-
-
-                for (int i = 0; i < unhandledShowObjs.size(); i++) {
-                    GCNotifyVisiableModel showObj = unhandledShowObjs.get(i);
-                    if (matchedNotifyViews.size() > 0) {
-                        GCNotifyView notifyObj = matchedNotifyViews.get(0);
-                        notifyObj.notifyRebind(showObj, isForce);
-                        matchedNotifyViews.remove(notifyObj);
-                    }
-                }
+            ArrayList<GCNotifyView> clist = categoryViews.get(category);
+            if (clist == null) {
+              clist = new ArrayList<>();
+              categoryViews.put(category, clist);
             }
+            clist.add(notifyObj);
+          }
+        }
 
-            for (int index = 0; index < matchedNotifyViews.size(); index++) {
-                GCNotifyView notifyView = matchedNotifyViews.get(index);
-                notifyView.emptyBind();
+        ArrayList<GCNotifyVisiableModel> unhandledShowObjs = new ArrayList<>();
+        for (int showIndex = 0; showIndex < showObjs.size(); showIndex++) {
+          GCNotifyVisiableModel showObj = showObjs.get(showIndex);
+          int key = showObj.getIndex();
+          GCNotifyView notifyObj = assignedViews.get(key);
+          if (notifyObj != null) {
+            notifyObj.notifyRebind(showObj, isForce);
+            matchedNotifyViews.remove(notifyObj);
+
+          } else {
+            unhandledShowObjs.add(showObj);
+          }
+        }
+
+        for (int i = 0; i < unhandledShowObjs.size(); i++) {
+          GCNotifyVisiableModel showObj = unhandledShowObjs.get(i);
+          if (matchedNotifyViews.size() > 0) {
+            // Preority to get from category, if no category, the get from one which category is "";
+            GCNotifyView notifyObj = null;
+            String showObjCategory = showObj.getCategory();
+            if (showObjCategory == null) {
+              showObjCategory = "";
             }
-        }
-    }
-
-    public void handleScrollOutside() {
-        this.handleScroll(scrollView, this.lastScrollViewY, true);
-    }
-
-    private void handleScroll(ScrollView scrollView, int y, boolean isForce) {
-        this.lastScrollViewY = y;
-        int scrollHeight = 0;
-        if(scrollView != null) {
-            scrollHeight = convertPixelsToDp(scrollView.getHeight(), this.getContext());
-        }
-
-        if(scrollHeight<50) {
-            DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-            int height = displayMetrics.heightPixels;
-            scrollHeight = convertPixelsToDp(height, this.getContext());
-        }
-
-        handleScrollInner(scrollHeight, convertPixelsToDp(y, this.getContext()), isForce);
-    }
-
-    /**
-     *
-     * @param scrollHeight the scrollHeight is dp unit
-     * @param y the y is dp unit
-     * @param isForce
-     */
-    private void handleScrollInner(int scrollHeight, int y, boolean isForce) {
-        int minY = y - 50;
-        if (minY < 0) {
-            minY = 0;
-        }
-
-        int maxY = minY + scrollHeight + 100;
-
-        boolean isPassed = false;
-        ArrayList<GCNotifyVisiableModel> showObjs = new ArrayList<>();
-        int itemCount = 0;
-        if (this.itemLayouts != null) {
-            itemCount = this.itemLayouts.size();
-        }
-
-        for (int i = 0; i < itemCount; i++) {
-            int startY = 0;
-            int endY = this.itemLayouts.getInt(i);
-            if (i != 0) {
-                startY = this.itemLayouts.getInt(i - 1);
+            if (showObjCategory != "") {
+              ArrayList<GCNotifyView> list = categoryViews.get(showObjCategory);
+              if (list != null && list.size() > 0) {
+                notifyObj = list.get(0);
+              }
             }
 
-            // It mean the element fall in visual area
-            if ((startY <= minY && endY >= minY)
-                    || (startY >= minY && endY <= maxY)
-                    || (startY <= maxY && endY >= maxY)
-            ) {
-                GCNotifyVisiableModel notifyVisiableModel
-                        = new GCNotifyVisiableModel(i, startY, endY);
-                // to show the item
-                showObjs.add(notifyVisiableModel);
-                isPassed = true;
-            } else {
-                if (isPassed) {
-                    break;
-                }
+            if (notifyObj == null) {
+              ArrayList<GCNotifyView> list = categoryViews.get("");
+              if (list != null && list.size() > 0) {
+                notifyObj = list.get(0);
+              } else {
+                notifyObj = matchedNotifyViews.get(0);
+              }
             }
+            if (notifyObj != null) {
+              String notifyObjCategory = notifyObj.getLastCategory();
+              if (notifyObjCategory == null) {
+                notifyObjCategory = "";
+              }
+
+              notifyObj.notifyRebind(showObj, isForce);
+              matchedNotifyViews.remove(notifyObj);
+              ArrayList clist = categoryViews.get(notifyObjCategory);
+              if(clist!=null && clist.contains(notifyObj)) {
+                clist.remove(notifyObj);  
+              }
+            }
+          }
         }
+      }
 
-        this.notifyToShowIndex(showObjs, isForce);
+      for (int index = 0; index < matchedNotifyViews.size(); index++) {
+        GCNotifyView notifyView = matchedNotifyViews.get(index);
+        notifyView.emptyBind();
+      }
+    }
+  }
+
+  public void handleScrollOutside() {
+    this.handleScroll(scrollView, this.lastScrollViewY, true);
+  }
+
+  private void handleScroll(ScrollView scrollView, int y, boolean isForce) {
+    this.lastScrollViewY = y;
+    int scrollHeight = 0;
+    if (scrollView != null) {
+      scrollHeight = convertPixelsToDp(scrollView.getHeight(), this.getContext());
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        this.relayoutChildren();
+    if (scrollHeight < 50) {
+      DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+      int height = displayMetrics.heightPixels;
+      scrollHeight = convertPixelsToDp(height, this.getContext());
     }
 
-    public void relayoutChildren() {
-        for (int i = 0; i < getChildCount(); i++) {
-            GCScrollItemView child = (GCScrollItemView) getChildAt(i);
-            int childWidth = child.getMeasuredWidth();
-            int startY = convertDpToPixels(child.getStartY(), this.getContext());
-            int endY = convertDpToPixels(child.getEndY(), this.getContext());
-            child.layout(0, startY, childWidth, endY);
+    handleScrollInner(scrollHeight, convertPixelsToDp(y, this.getContext()), isForce);
+  }
+
+  /**
+   * @param scrollHeight the scrollHeight is dp unit
+   * @param y            the y is dp unit
+   * @param isForce
+   */
+  private void handleScrollInner(int scrollHeight, int y, boolean isForce) {
+    int minY = y - 50;
+    if (minY < 0) {
+      minY = 0;
+    }
+
+    int maxY = minY + scrollHeight + 100;
+
+    boolean isPassed = false;
+    ArrayList<GCNotifyVisiableModel> showObjs = new ArrayList<>();
+    int itemCount = 0;
+    if (this.itemLayouts != null) {
+      itemCount = this.itemLayouts.size();
+    }
+
+    for (int i = 0; i < itemCount; i++) {
+      int startY = 0;
+      int endY = this.itemLayouts.getInt(i);
+      if (i != 0) {
+        startY = this.itemLayouts.getInt(i - 1);
+      }
+
+      // It mean the element fall in visual area
+      if ((startY <= minY && endY >= minY)
+        || (startY >= minY && endY <= maxY)
+        || (startY <= maxY && endY >= maxY)
+      ) {
+        String category = "";
+        if (this.categories != null && this.categories.size() >= i + 1) {
+          category = this.categories.getString(i);
         }
+        GCNotifyVisiableModel notifyVisiableModel
+          = new GCNotifyVisiableModel(i, startY, endY, category);
+        // to show the item
+        showObjs.add(notifyVisiableModel);
+        isPassed = true;
+      } else {
+        if (isPassed) {
+          break;
+        }
+      }
     }
 
-    public static int convertPixelsToDp(int px, Context context) {
-        return px / (context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }
+    this.notifyToShowIndex(showObjs, isForce);
+  }
 
-    public static int convertDpToPixels(int pt, Context context) {
-        return pt * (context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+  @Override
+  protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    this.relayoutChildren();
+  }
+
+  public void relayoutChildren() {
+    for (int i = 0; i < getChildCount(); i++) {
+      GCScrollItemView child = (GCScrollItemView) getChildAt(i);
+      int childWidth = child.getMeasuredWidth();
+      int startY = convertDpToPixels(child.getStartY(), this.getContext());
+      int endY = convertDpToPixels(child.getEndY(), this.getContext());
+      child.layout(0, startY, childWidth, endY);
     }
+  }
+
+  public static int convertPixelsToDp(int px, Context context) {
+    if (GCCoordinatorView.pixelRatio >= 1) {
+      return Math.round(px / GCCoordinatorView.pixelRatio);
+    } else {
+      return Math.round(px / ((float) context.getResources().getDisplayMetrics().densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT));
+    }
+  }
+
+  public static int convertDpToPixels(int pt, Context context) {
+    if (GCCoordinatorView.pixelRatio >= 1) {
+      return Math.round(pt * GCCoordinatorView.pixelRatio);
+    } else {
+      return Math.round(pt * ((float) context.getResources().getDisplayMetrics().densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT));
+    }
+  }
 }

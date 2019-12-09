@@ -1,7 +1,7 @@
 {
   "name": "react-native-gc-list-view",
   "title": "React Native GC List View",
-  "version": "1.0.15",
+  "version": "1.0.18",
   "description": "The component is react native list which fast than recycler list and flat list",
   "main": "build/commonjs/index.js",
   "module": "build/module/index.js",

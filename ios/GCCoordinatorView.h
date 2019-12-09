@@ -19,8 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSPointerArray *notifyViews;
 // The array will save the end of position of element
 @property (nonatomic, strong) NSArray<NSNumber *> *itemLayouts;
-@property (nonatomic, strong) NSArray<NSNumber *> *categories;
-
+@property (nonatomic, strong) NSArray<NSString *> *categories;
+@property (nonatomic) CGFloat pixelRatio;
 @end
 
 NS_ASSUME_NONNULL_END

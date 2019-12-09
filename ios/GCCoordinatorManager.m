@@ -12,6 +12,7 @@
 @implementation GCCoordinatorManager
 RCT_EXPORT_MODULE(GCCoordinatorView)
 RCT_EXPORT_VIEW_PROPERTY(forceIndex, NSInteger)
+RCT_EXPORT_VIEW_PROPERTY(pixelRatio, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(itemLayouts, NSArray<NSNumber *>)
 RCT_EXPORT_VIEW_PROPERTY(categories, NSArray<NSNumber *>)
 

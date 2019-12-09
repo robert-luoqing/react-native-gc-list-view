@@ -5,7 +5,7 @@ import {
 import GCNotifyView from './gcNotifyView';
 import _ from 'lodash';
 
-export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderItem: (itemData: any, index: number) => JSX.Element; itemIndex: number; }, any> {
+export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderItem: (itemData: any, index: number, freed?: boolean) => JSX.Element; itemIndex: number; }, any> {
     private lastData: any;
 
     constructor(props: any) {
@@ -13,7 +13,8 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
         this.state = {
             data: null,
             height: 0,
-            index: -1
+            index: -1,
+            freed: false,
         }
     }
 
@@ -23,18 +24,32 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
                 height: this.state.height
             }}>
                 <GCNotifyView
-                    onIndexChange={(obj: any) => { this.handleIndexChange(obj.nativeEvent) }}
+                    onIndexChange={this.handleIndexChange}
+                    onIndexFree={this.handleFreeItem}
                 />
 
                 {this.state.data &&
-                    this.props.renderItem ? this.props.renderItem(this.state.data, this.state.index) : null
+                    this.props.renderItem ? this.props.renderItem(this.state.data, this.state.index, this.state.freed) : null
                 }
 
             </View>
         );
     }
 
-    handleIndexChange = (obj: any) => {
+    handleFreeItem = ()=>{
+        this.lastData = {
+            data: this.state.data,
+            startY: -101000,
+            endY: -100000,
+            index: this.state.index,
+            freed: true
+        }
+        
+        this.debounceDoBind();
+    }
+
+    handleIndexChange = (e: any) => {
+        const obj = e.nativeEvent;
         const itemData = this.props.list[obj.index];
         const startY = obj.startY;
         const endY = obj.endY;
@@ -42,7 +57,8 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
             data: itemData,
             startY,
             endY,
-            index: obj.index
+            index: obj.index,
+            freed: false
         }
 
         if (this.state.data) {
@@ -61,7 +77,8 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
             this.setState({
                 data: bindData.data,
                 height: height,
-                index: bindData.index
+                index: bindData.index,
+                freed: bindData.freed
             });
         }
     }

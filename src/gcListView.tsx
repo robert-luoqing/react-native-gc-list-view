@@ -2,7 +2,8 @@ import React from 'react';
 import {
     StyleSheet,
     ScrollView,
-    ScrollViewProps
+    ScrollViewProps,
+    PixelRatio
 } from 'react-native';
 import GCCoordinatorView from './gcCoordinatorView';
 import { GCSingleBindView } from './gcSingleBindView';
@@ -16,7 +17,7 @@ interface GCListViewPropInner {
      * if the item have difference category
      * If no category item, then null be set.
      */
-    categories?: number[]; 
+    categories?: string[]; 
     /**
      * The offset+height will be set
      * if there are three elements like:
@@ -36,9 +37,13 @@ type GCListViewProp = ScrollViewProps & GCListViewPropInner;
 
 export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex: number; bindList: any[]; }> {
     scrollContentHeight = 0;
+    ratio: number;
     constructor(props: any) {
         super(props);
         const bindList = [];
+
+        this.ratio = PixelRatio.get();
+
         for (let i = 0; i < 100; i++) {
             bindList.push(null);
         }
@@ -78,6 +83,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
         >
             <GCCoordinatorView
                 forceIndex={this.state.forceIndex}
+                pixelRatio={this.ratio}
                 itemLayouts={this.props.itemLayouts || []}
                 categories={this.props.categories || []}
                 style={{

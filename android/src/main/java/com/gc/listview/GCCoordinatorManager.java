@@ -29,6 +29,11 @@ public class GCCoordinatorManager extends ViewGroupManager<GCCoordinatorView> {
         view.setForceIndex(forceIndex);
     }
 
+    @ReactProp(name = "pixelRatio", defaultInt = -1)
+    public void setPixelRatio(GCCoordinatorView view, float pixelRatio) {
+        view.setPixelRatio(pixelRatio);
+    }
+
     @ReactProp(name = "itemLayouts")
     public void setItemLayouts(GCCoordinatorView view, ReadableArray itemLayouts) {
         view.setItemLayouts(itemLayouts);
