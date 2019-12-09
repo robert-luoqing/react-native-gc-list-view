@@ -5,9 +5,12 @@ import {
 import GCNotifyView from './gcNotifyView';
 import _ from 'lodash';
 
-export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderItem: (itemData: any, index: number, freed?: boolean) => JSX.Element; itemIndex: number; }, any> {
+export class GCSingleBindView extends React.PureComponent<{
+    list: any[]; renderItem: (itemData: any, index: number, freed?: boolean)
+        => JSX.Element; itemIndex: number;
+}, any> {
     private lastData: any;
-
+    private debounceDoBind: any;
     constructor(props: any) {
         super(props);
         this.state = {
@@ -15,7 +18,9 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
             height: 0,
             index: -1,
             freed: false,
-        }
+        };
+
+        this.debounceDoBind = _.debounce(this.doBind, 5);
     }
 
     render() {
@@ -29,22 +34,24 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
                 />
 
                 {this.state.data &&
-                    this.props.renderItem ? this.props.renderItem(this.state.data, this.state.index, this.state.freed) : null
+                    this.props.renderItem
+                        ? this.props.renderItem(this.state.data, this.state.index, this.state.freed)
+                        : null
                 }
 
             </View>
         );
     }
 
-    handleFreeItem = ()=>{
+    handleFreeItem = () => {
         this.lastData = {
             data: this.state.data,
             startY: -101000,
             endY: -100000,
             index: this.state.index,
             freed: true
-        }
-        
+        };
+
         this.debounceDoBind();
     }
 
@@ -59,7 +66,7 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
             endY,
             index: obj.index,
             freed: false
-        }
+        };
 
         if (this.state.data) {
             this.debounceDoBind();
@@ -71,18 +78,16 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
     doBind = () => {
         const bindData = this.lastData;
         const height = bindData.endY - bindData.startY;
-        if (this.state.data != bindData.data
-            || this.state.height != height
-            || this.state.index != bindData.index
-            || this.state.freed != bindData.freed) {
+        if (this.state.data !== bindData.data
+            || this.state.height !== height
+            || this.state.index !== bindData.index
+            || this.state.freed !== bindData.freed) {
             this.setState({
                 data: bindData.data,
-                height: height,
+                height,
                 index: bindData.index,
                 freed: bindData.freed
             });
         }
     }
-
-    debounceDoBind = _.debounce(this.doBind, 5);
-};
+}

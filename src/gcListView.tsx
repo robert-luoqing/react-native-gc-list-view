@@ -27,6 +27,7 @@ interface GCListViewPropInner {
      * The array should be [10,30,50]
      */
     itemLayouts: number[];
+    preloadFrame?: number;
     /**
      * The item will be render
      */
@@ -50,12 +51,12 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
 
         this.state = {
             forceIndex: 0,
-            bindList: bindList
-        }
+            bindList
+        };
     }
 
     UNSAFE_componentWillReceiveProps(nextProps: any) {
-        if (nextProps.itemLayouts != this.props.itemLayouts) {
+        if (nextProps.itemLayouts !== this.props.itemLayouts) {
             this.calcItemLayout(nextProps.itemLayouts);
         }
     }
@@ -72,7 +73,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
         setTimeout(() => {
             this.setState({
                 forceIndex: this.state.forceIndex + 1
-            })
+            });
         }, 1);
     }
 
@@ -86,6 +87,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
                 pixelRatio={this.ratio}
                 itemLayouts={this.props.itemLayouts || []}
                 categories={this.props.categories || []}
+                preloadFrame={this.props.preloadFrame || 1}
                 style={{
                     height: this.scrollContentHeight,
                 }}>
@@ -105,7 +107,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
                     })
                 }
             </GCCoordinatorView>
-        </ScrollView>
+        </ScrollView>;
     }
 }
 

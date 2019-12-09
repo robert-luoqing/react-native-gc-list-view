@@ -26,6 +26,18 @@ public class GCCoordinatorView extends ReactViewGroup {
 
   private int lastScrollViewY;
 
+  /**
+   * How much frame will be load
+   */
+  private int preloadFrame = 1;
+  public int getPreloadFrame() {
+    return preloadFrame;
+  }
+
+  public void setPreloadFrame(int preloadFrame) {
+    this.preloadFrame = preloadFrame;
+  }
+
   public static float pixelRatio;
 
   public void setPixelRatio(float ratio) {
@@ -221,12 +233,17 @@ public class GCCoordinatorView extends ReactViewGroup {
    * @param isForce
    */
   private void handleScrollInner(int scrollHeight, int y, boolean isForce) {
-    int minY = y - 50;
+    int preLoadFrameHeight = this.getPreloadFrame() * scrollHeight;
+    if (preLoadFrameHeight == 0) {
+      preLoadFrameHeight = 50;
+    }
+
+    int minY = y - preLoadFrameHeight;
     if (minY < 0) {
       minY = 0;
     }
 
-    int maxY = minY + scrollHeight + 100;
+    int maxY = minY + scrollHeight + preLoadFrameHeight * 2;
 
     boolean isPassed = false;
     ArrayList<GCNotifyVisiableModel> showObjs = new ArrayList<>();
