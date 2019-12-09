@@ -339,7 +339,7 @@ public class GCCoordinatorView extends ReactViewGroup {
     this.handleScrollOutside();
     if (this.invert) {
       if (h != oldh) {
-        int gap = h - (this.lastScrollViewY + this.scrollView.getHeight());
+        int gap = oldh - (this.lastScrollViewY + this.scrollView.getHeight());
         if (gap < 50) {
           if (gap < 0) {
             this.scrollView.scrollTo(0, 0);
