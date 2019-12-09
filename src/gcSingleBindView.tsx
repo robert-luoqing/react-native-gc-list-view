@@ -73,7 +73,8 @@ export class GCSingleBindView extends React.PureComponent<{ list: any[]; renderI
         const height = bindData.endY - bindData.startY;
         if (this.state.data != bindData.data
             || this.state.height != height
-            || this.state.index != bindData.index) {
+            || this.state.index != bindData.index
+            || this.state.freed != bindData.freed) {
             this.setState({
                 data: bindData.data,
                 height: height,

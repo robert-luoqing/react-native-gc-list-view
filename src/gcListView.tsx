@@ -10,14 +10,14 @@ import { GCSingleBindView } from './gcSingleBindView';
 import GCScrollItemView from './gcScrollItemView';
 
 interface GCListViewPropInner {
-    data: any[]; 
+    data: any[];
     /**
      * The control category
      * Try to use same category control to avoid recreate element
      * if the item have difference category
      * If no category item, then null be set.
      */
-    categories?: string[]; 
+    categories?: string[];
     /**
      * The offset+height will be set
      * if there are three elements like:
@@ -26,11 +26,11 @@ interface GCListViewPropInner {
      * element 1: offset: 30, height: 20,
      * The array should be [10,30,50]
      */
-    itemLayouts: number[]; 
+    itemLayouts: number[];
     /**
      * The item will be render
      */
-    renderItem: (itemData: any, index: number) => JSX.Element;
+    renderItem: (itemData: any, index: number, free?: boolean) => JSX.Element;
 }
 
 type GCListViewProp = ScrollViewProps & GCListViewPropInner;
