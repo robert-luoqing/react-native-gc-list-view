@@ -6,6 +6,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -91,15 +92,15 @@ public class GCCoordinatorView extends ReactViewGroup {
             }
           });
         } else {
-          // scrollView.getViewTreeObserver().addOnScrollChangedListener(new OnScrollChangedListener() {
-          //     @Override
-          //     public void onScrollChanged() {
-          //         int scrollY = rootScrollView.getScrollY(); //for verticalScrollView
-          //         GCCoordinatorView.this.handleScroll(scrollView, scrollY, false);
-          //     }
-          // });
+           scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+               @Override
+               public void onScrollChanged() {
+                   int scrollY = scrollView.getScrollY(); //for verticalScrollView
+                   GCCoordinatorView.this.handleScroll(scrollView, scrollY, false);
+                 Log.d("DEBUG", "coordinate1: " + String.valueOf(scrollY));
+               }
+           });
         }
-
       }
     }
   }
