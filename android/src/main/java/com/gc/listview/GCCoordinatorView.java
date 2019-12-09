@@ -90,6 +90,14 @@ public class GCCoordinatorView extends ReactViewGroup {
               Log.d("DEBUG", "coordinate: " + String.valueOf(i1));
             }
           });
+        } else {
+          // scrollView.getViewTreeObserver().addOnScrollChangedListener(new OnScrollChangedListener() {
+          //     @Override
+          //     public void onScrollChanged() {
+          //         int scrollY = rootScrollView.getScrollY(); //for verticalScrollView
+          //         GCCoordinatorView.this.handleScroll(scrollView, scrollY, false);
+          //     }
+          // });
         }
 
       }
