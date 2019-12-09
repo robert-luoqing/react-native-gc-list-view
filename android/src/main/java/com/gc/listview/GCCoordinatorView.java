@@ -28,6 +28,19 @@ public class GCCoordinatorView extends ReactViewGroup {
   private int lastScrollViewY;
 
   /**
+   * invert to show item
+   */
+  private boolean invert = false;
+
+  public boolean isInvert() {
+    return invert;
+  }
+
+  public void setInvert(boolean invert) {
+    this.invert = invert;
+  }
+
+  /**
    * How much frame will be load
    */
   private int preloadFrame = 1;
@@ -233,7 +246,7 @@ public class GCCoordinatorView extends ReactViewGroup {
       scrollHeight = convertPixelsToDp(height, this.getContext());
     }
 
-    handleScrollInner(scrollHeight, convertPixelsToDp(y, this.getContext()), isForce);
+    handleScrollInner(scrollHeight, convertPixelsToDp(this.getHeight(), this.getContext()), convertPixelsToDp(y, this.getContext()), isForce);
   }
 
   /**
@@ -241,7 +254,11 @@ public class GCCoordinatorView extends ReactViewGroup {
    * @param y            the y is dp unit
    * @param isForce
    */
-  private void handleScrollInner(int scrollHeight, int y, boolean isForce) {
+  private void handleScrollInner(int scrollHeight, int contentHeight, int y, boolean isForce) {
+    if (this.invert == true) {
+      y = contentHeight - y;
+    }
+
     int preLoadFrameHeight = this.getPreloadFrame() * scrollHeight;
     if (preLoadFrameHeight == 0) {
       preLoadFrameHeight = 50;
@@ -277,8 +294,13 @@ public class GCCoordinatorView extends ReactViewGroup {
         if (this.categories != null && this.categories.size() >= i + 1) {
           category = this.categories.getString(i);
         }
-        GCNotifyVisiableModel notifyVisiableModel
-          = new GCNotifyVisiableModel(i, startY, endY, category);
+        GCNotifyVisiableModel notifyVisiableModel = null;
+        if (this.invert == true) {
+          notifyVisiableModel = new GCNotifyVisiableModel(i, contentHeight - endY, contentHeight - startY, category);
+        } else {
+          notifyVisiableModel = new GCNotifyVisiableModel(i, startY, endY, category);
+        }
+
         // to show the item
         showObjs.add(notifyVisiableModel);
         isPassed = true;
@@ -290,6 +312,12 @@ public class GCCoordinatorView extends ReactViewGroup {
     }
 
     this.notifyToShowIndex(showObjs, isForce);
+  }
+
+  @Override
+  protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+    super.onSizeChanged(w, h, oldw, oldh);
+    this.handleScrollOutside();
   }
 
   @Override

@@ -28,6 +28,7 @@ interface GCListViewPropInner {
      */
     itemLayouts: number[];
     preloadFrame?: number;
+    invert?: boolean;
     /**
      * The item will be render
      */
@@ -88,6 +89,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
                 itemLayouts={this.props.itemLayouts || []}
                 categories={this.props.categories || []}
                 preloadFrame={this.props.preloadFrame || 1}
+                invert={this.props.invert || false}
                 style={{
                     height: this.scrollContentHeight,
                 }}>

@@ -54,4 +54,9 @@ public class GCCoordinatorManager extends ViewGroupManager<GCCoordinatorView> {
   public void setPreloadFrame(GCCoordinatorView view, int preloadFrame) {
     view.setPreloadFrame(preloadFrame);
   }
+
+  @ReactProp(name = "invert", defaultBoolean = false)
+  public void setInvert(GCCoordinatorView view, boolean invert) {
+    view.setInvert(invert);
+  }
 }
