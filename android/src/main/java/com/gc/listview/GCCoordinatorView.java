@@ -33,6 +33,8 @@ public class GCCoordinatorView extends ReactViewGroup {
    */
   private int lastContentHeight = 0;
 
+  private int lastCoordViewHeight = 0;
+
   /**
    * invert to show item
    */
@@ -358,18 +360,7 @@ public class GCCoordinatorView extends ReactViewGroup {
   @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
-    this.handleScrollOutside();
-    if (this.invert) {
-      if (h != oldh) {
-        int gap = oldh - (this.lastScrollViewY + this.scrollView.getHeight());
-        int tempScrollTo = 0;
-        if (gap < 50) {
-          tempScrollTo = h - gap - this.scrollView.getHeight();
-          if (tempScrollTo < 0) tempScrollTo = 0;
-          scrollToY(tempScrollTo);
-        }
-      }
-    }
+
   }
 
   private void scrollToY(int tempScrollTo) {
@@ -384,8 +375,29 @@ public class GCCoordinatorView extends ReactViewGroup {
   }
 
   @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+  }
+
+  @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     this.relayoutChildren();
+    // Handle size changed
+    int newHeight = (bottom - top);
+    if(this.lastCoordViewHeight != newHeight) {
+      this.handleScrollOutside();
+      if (this.invert) {
+        int gap = this.lastCoordViewHeight - (this.lastScrollViewY + this.scrollView.getHeight());
+        int tempScrollTo = 0;
+        if (gap < 50) {
+          tempScrollTo = newHeight - gap - this.scrollView.getHeight();
+          if (tempScrollTo < 0) tempScrollTo = 0;
+          scrollToY(tempScrollTo);
+        }
+      }
+    }
+
+    this.lastCoordViewHeight = newHeight;
   }
 
   public void relayoutChildren() {
