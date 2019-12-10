@@ -46,7 +46,7 @@ export class GCListView extends React.PureComponent<GCListViewProp, { forceIndex
 
         this.ratio = PixelRatio.get();
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 500; i++) {
             bindList.push(null);
         }
 

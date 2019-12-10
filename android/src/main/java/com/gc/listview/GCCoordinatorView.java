@@ -2,6 +2,7 @@ package com.gc.listview;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -113,6 +114,19 @@ public class GCCoordinatorView extends ReactViewGroup {
     if (scrollView == null) {
       scrollView = GCCoordinatorView.fintSpecifyParent(ReactScrollView.class, this.getParent());
       if (scrollView != null) {
+        scrollView.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+          @Override
+          public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            if (bottom != oldBottom) {
+              if (invert == true) {
+                int gap = oldBottom - bottom;
+                int scrollTo = lastScrollViewY + gap;
+                if (scrollTo < 0) scrollTo = 0;
+                scrollToY(scrollTo);
+              }
+            }
+          }
+        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
           scrollView.setOnScrollChangeListener(new OnScrollChangeListener() {
             @Override
@@ -169,18 +183,7 @@ public class GCCoordinatorView extends ReactViewGroup {
           if (notifyObj.getKey() != null && notifyObj.getKey() != "") {
             assignedViews.put(notifyObj.getKey(), notifyObj);
           } else {
-            // Category the view
-            // Category the view
-            String category = notifyObj.getLastCategory();
-            if (category == null) {
-              category = "";
-            }
-            ArrayList<GCNotifyView> clist = categoryViews.get(category);
-            if (clist == null) {
-              clist = new ArrayList<>();
-              categoryViews.put(category, clist);
-            }
-            clist.add(notifyObj);
+            categoryNotifyView(categoryViews, notifyObj);
           }
         }
 
@@ -193,10 +196,15 @@ public class GCCoordinatorView extends ReactViewGroup {
           if (notifyObj != null) {
             notifyObj.notifyRebind(showObj, isForce);
             matchedNotifyViews.remove(notifyObj);
-
+            assignedViews.remove(key);
           } else {
             unhandledShowObjs.add(showObj);
           }
+        }
+
+        // reput the assigned notify view to category
+        for (GCNotifyView view : assignedViews.values()) {
+          categoryNotifyView(categoryViews, view);
         }
 
         for (int i = 0; i < unhandledShowObjs.size(); i++) {
@@ -245,6 +253,20 @@ public class GCCoordinatorView extends ReactViewGroup {
         notifyView.emptyBind();
       }
     }
+  }
+
+  private void categoryNotifyView(HashMap<String, ArrayList<GCNotifyView>> categoryViews, GCNotifyView notifyObj) {
+    // Category the view
+    String category = notifyObj.getLastCategory();
+    if (category == null) {
+      category = "";
+    }
+    ArrayList<GCNotifyView> clist = categoryViews.get(category);
+    if (clist == null) {
+      clist = new ArrayList<>();
+      categoryViews.put(category, clist);
+    }
+    clist.add(notifyObj);
   }
 
   public void handleScrollOutside() {
@@ -340,15 +362,25 @@ public class GCCoordinatorView extends ReactViewGroup {
     if (this.invert) {
       if (h != oldh) {
         int gap = oldh - (this.lastScrollViewY + this.scrollView.getHeight());
+        int tempScrollTo = 0;
         if (gap < 50) {
-          if (gap < 0) {
-            this.scrollView.scrollTo(0, 0);
-          } else {
-            this.scrollView.scrollTo(0, h - gap - this.scrollView.getHeight());
-          }
+          tempScrollTo = h - gap - this.scrollView.getHeight();
+          if (tempScrollTo < 0) tempScrollTo = 0;
+          scrollToY(tempScrollTo);
         }
       }
     }
+  }
+
+  private void scrollToY(int tempScrollTo) {
+    final int scrollTo = tempScrollTo;
+    Handler mHandler = new Handler();
+    mHandler.post(new Runnable() {
+      @Override
+      public void run() {
+        scrollView.scrollTo(0, scrollTo);
+      }
+    });
   }
 
   @Override
